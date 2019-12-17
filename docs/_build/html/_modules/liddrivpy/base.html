@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>liddrivpy.base &mdash; PyCUP 1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PyCUP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/liddrivpy.html">liddrivpy package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyCUP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>liddrivpy.base</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for liddrivpy.base</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: UTF-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;Base class for finite-volume Cartesian staggered grid solver</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">thomas</span>
+
+<span class="c1">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#</span>
+
+<div class="viewcode-block" id="System"><a class="viewcode-back" href="../../source/liddrivpy.base.html#liddrivpy.base.System">[docs]</a><span class="k">class</span> <span class="nc">System</span><span class="p">:</span>
+
+  <span class="sd">&quot;&quot;&quot;Base class for physical parameters of lid-driven cavity system.</span>
+
+<span class="sd">  Parameters</span>
+<span class="sd">  ----------</span>
+<span class="sd">  N_cells : int [unitless]</span>
+<span class="sd">    Number of cells in each dimension.</span>
+<span class="sd">  Re : float [unitless]</span>
+<span class="sd">    Reynolds number of system (ratio of inertial to viscous forces).</span>
+<span class="sd">  U_lid : float [m/s]</span>
+<span class="sd">    Velocity of cavity lid.</span>
+<span class="sd">  L_lid : float [m]</span>
+<span class="sd">    Size of lid along each dimension.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+    <span class="n">N_cells</span><span class="p">,</span>
+    <span class="n">Re</span><span class="p">,</span>
+    <span class="n">U_lid</span><span class="p">,</span>
+    <span class="n">L_lid</span> <span class="p">):</span>
+
+    <span class="c1"># convert input parameters to standard form</span>
+    <span class="c1">#.........................................................................#</span>
+
+    <span class="n">N_cells</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="n">N_cells</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">N_cells</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;`N_cells` must be non-negative, not </span><span class="si">{N_cells}</span><span class="s1">&#39;</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_N_cells</span> <span class="o">=</span> <span class="n">N_cells</span>
+
+    <span class="n">Re</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">Re</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">Re</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Reynolds number `Re` must be non-negative, not </span><span class="si">{Re}</span><span class="s1">&#39;</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_Re</span> <span class="o">=</span> <span class="n">Re</span>
+
+    <span class="n">U_lid</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">U_lid</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">U_lid</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Lid velocity `U_lid` must be non-negative, not </span><span class="si">{U_lid}</span><span class="s1">&#39;</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_U_lid</span> <span class="o">=</span> <span class="n">U_lid</span>
+
+    <span class="n">L_lid</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">L_lid</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">L_lid</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Lid size `L_lid` must be non-negative, not </span><span class="si">{L_lid}</span><span class="s1">&#39;</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">L_lid</span> <span class="o">=</span> <span class="n">L_lid</span></div>
+
+    <span class="c1">#.........................................................................#</span>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+<span class="c1">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#</span>
+
+<div class="viewcode-block" id="Solver"><a class="viewcode-back" href="../../source/liddrivpy.base.html#liddrivpy.base.Solver">[docs]</a><span class="k">class</span> <span class="nc">Solver</span><span class="p">:</span>
+
+  <span class="sd">&quot;&quot;&quot;Base class for nonphysical (purely computational) parameters for</span>
+<span class="sd">  lid-driven cavity solver.</span>
+
+<span class="sd">  Parameters</span>
+<span class="sd">  ----------</span>
+<span class="sd">  dt : float [seconds]</span>
+<span class="sd">    Time-step for each iteration of the solver.</span>
+<span class="sd">  omega : float [unitless]</span>
+<span class="sd">    Relaxation factor for alternating direction implicit method.</span>
+<span class="sd">  max_t : float [seconds]</span>
+<span class="sd">    Maximum allowed simulation time.</span>
+<span class="sd">  p_max : int [unitless]</span>
+<span class="sd">    Maximum allowed iterations of pressure solver</span>
+<span class="sd">  tol : float [unitless]</span>
+<span class="sd">    Tolerance (largest allowed error) for ADI method.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">,</span>
+    <span class="n">omega</span><span class="p">,</span>
+    <span class="n">max_t</span><span class="p">,</span>
+    <span class="n">p_max</span><span class="p">,</span>
+    <span class="n">tol</span> <span class="p">):</span>
+
+    <span class="c1"># convert input parameters to standard form</span>
+    <span class="c1">#.........................................................................#</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">dt</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;`dt` must be non-negative, not </span><span class="si">{dt}</span><span class="s1">&#39;</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">dt</span>
+
+    <span class="n">omega</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">omega</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">omega</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Relaxation factor `omega` must be non-negative, not </span><span class="si">{omega}</span><span class="s1">&#39;</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="o">=</span> <span class="n">omega</span>
+
+    <span class="n">max_t</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">max_t</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_t</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Maximum time `max_t` must be non-negative, not </span><span class="si">{max_t}</span><span class="s1">&#39;</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_max_t</span> <span class="o">=</span> <span class="n">max_t</span>
+
+    <span class="n">p_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">p_max</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">p_max</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Maximum number of pressure solver iterations `p_max` must be&#39;</span> \
+        <span class="s1">&#39;non-negative, not </span><span class="si">{p_max}</span><span class="s1">&#39;</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_p_max</span> <span class="o">=</span> <span class="n">p_max</span>
+
+    <span class="n">tol</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">tol</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">tol</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Tolerance `tol` must be non-negative, not </span><span class="si">{tol}</span><span class="s1">&#39;</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span> <span class="o">=</span> <span class="n">tol</span></div>
+
+    <span class="c1">#.........................................................................#</span>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+<span class="c1">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#</span>
+
+<div class="viewcode-block" id="Simulation"><a class="viewcode-back" href="../../source/liddrivpy.base.html#liddrivpy.base.Simulation">[docs]</a><span class="k">class</span> <span class="nc">Simulation</span><span class="p">:</span>
+
+  <span class="sd">&quot;&quot;&quot;Base class for lid-driven cavity complete simulation.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="n">system</span><span class="p">,</span>
+    <span class="n">solver</span> <span class="p">):</span>
+
+    <span class="c1"># convert input parameters to standard form and extract component class</span>
+    <span class="c1"># variables from `system` and `solver`.</span>
+    <span class="c1">#.........................................................................#</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">system</span><span class="p">,</span> <span class="n">System</span> <span class="p">):</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;`system` must be instance of System, not {type(system)}.&#39;</span>
+      <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_system</span> <span class="o">=</span> <span class="n">system</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_N_cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system</span><span class="o">.</span><span class="n">_N_cells</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_Re</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system</span><span class="o">.</span><span class="n">Re</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_U_lid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system</span><span class="o">.</span><span class="n">U_lid</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_L_lid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system</span><span class="o">.</span><span class="n">L_lid</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">solver</span><span class="p">,</span> <span class="n">Solver</span> <span class="p">):</span>
+      <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;`solver` must be instance of Solver, not {type(solver)}.&#39;</span>
+      <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span> <span class="o">=</span> <span class="n">solver</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span><span class="o">.</span><span class="n">dt</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span><span class="o">.</span><span class="n">omega</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_max_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span><span class="o">.</span><span class="n">max_t</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_p_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span><span class="o">.</span><span class="n">p_max</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span><span class="o">.</span><span class="n">tol</span>
+
+    <span class="c1"># define derived variables</span>
+    <span class="c1">#.........................................................................#</span>
+
+    <span class="c1"># number of cells in each dimension of cavity (including ghost cells)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N_cells</span> <span class="o">+</span> <span class="mi">2</span>
+
+    <span class="c1"># spatial discretization in x and y dimensions respectively</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_L_lid</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N_cells</span>
+
+    <span class="c1"># primitive variable arrays</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># predictor variable arrays</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_u_p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># previous-step variable arrays (used for computing predictor step)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_u_prev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_prev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p_prev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># weight arrays and solution array for pressure solver</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_A_n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_e</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_S</span> <span class="o">=</span> \
+      <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_A_n</span><span class="p">[</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="o">-</span><span class="mi">2</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_A_s</span><span class="p">[</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_A_e</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_A_w</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_A_p</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_w</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_e</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_s</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_n</span> <span class="p">)</span>
+
+    <span class="c1">#.........................................................................#</span>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+<div class="viewcode-block" id="Simulation.set_boundary_conditions"><a class="viewcode-back" href="../../source/liddrivpy.base.html#liddrivpy.base.Simulation.set_boundary_conditions">[docs]</a>  <span class="k">def</span> <span class="nf">set_boundary_conditions</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+    <span class="n">u</span><span class="p">,</span>
+    <span class="n">v</span> <span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Set boundary conditions for the solver.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    u : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of nondimensionalized x-velocities of discretized cavity, before</span>
+<span class="sd">      boundary conditions have been applied.</span>
+<span class="sd">    v : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of nondimensionalized y-velocities of discretized cavity, before</span>
+<span class="sd">      boundary conditions have been applied.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    u : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of nondimensionalized x-velocities of discretized cavity, after</span>
+<span class="sd">      boundary conditions have been applied.</span>
+<span class="sd">    v : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of nondimensionalized y-velocities of discretized cavity, after</span>
+<span class="sd">      boundary conditions have been applied.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># north</span>
+    <span class="n">u</span><span class="p">[</span> <span class="p">:,</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_lid</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span> <span class="p">:,</span> <span class="o">-</span><span class="mi">2</span> <span class="p">]</span> <span class="p">)</span>
+    <span class="n">v</span><span class="p">[</span> <span class="p">:,</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># south</span>
+    <span class="n">u</span><span class="p">[</span> <span class="p">:,</span> <span class="mi">0</span> <span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">u</span><span class="p">[</span> <span class="p">:,</span> <span class="mi">1</span> <span class="p">]</span>
+    <span class="n">v</span><span class="p">[</span> <span class="p">:,</span> <span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># east</span>
+    <span class="n">u</span><span class="p">[</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">v</span><span class="p">[</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">v</span><span class="p">[</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span>
+
+    <span class="c1"># west</span>
+    <span class="n">u</span><span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">v</span><span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:</span> <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span></div>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+<div class="viewcode-block" id="Simulation.predicted_time_derivatives"><a class="viewcode-back" href="../../source/liddrivpy.base.html#liddrivpy.base.Simulation.predicted_time_derivatives">[docs]</a>  <span class="k">def</span> <span class="nf">predicted_time_derivatives</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+    <span class="n">u</span><span class="p">,</span>
+    <span class="n">v</span> <span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Calculate time-derivatives of velocity for use in Prediction step,</span>
+<span class="sd">    ignoring contribution from pressure gradient.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    u : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of nondimensionalized x-velocities of discretized cavity.</span>
+<span class="sd">    v : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of nondimensionalized y-velocities of discretized cavity.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    RHS_x : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of nondimensionalzied velocity time derivative along x dimension.</span>
+<span class="sd">    RHS_y : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of nondimensionalzied velocity time derivative along y dimension.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span>
+
+    <span class="c1"># calculate derivative of u**2 wrt. x</span>
+    <span class="n">ue2</span> <span class="o">=</span> <span class="p">(</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span> <span class="mi">3</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">uw2</span> <span class="o">=</span> <span class="p">(</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">du2_dx</span> <span class="o">=</span> <span class="p">(</span> <span class="n">ue2</span> <span class="o">-</span> <span class="n">uw2</span> <span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span>
+
+    <span class="c1"># calculate derivative of uv wrt. y</span>
+    <span class="n">un</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span> <span class="p">]</span> <span class="p">)</span>
+    <span class="n">vn</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span> <span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span> <span class="p">]</span> <span class="p">)</span>
+    <span class="n">us</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span> <span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span>
+    <span class="n">vs</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span>
+    <span class="n">duv_dy</span> <span class="o">=</span> <span class="p">(</span> <span class="n">un</span> <span class="o">*</span> <span class="n">vn</span> <span class="o">-</span> <span class="n">us</span> <span class="o">*</span> <span class="n">vs</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span>
+
+    <span class="c1"># calculate second derivative of u wrt. x</span>
+    <span class="n">d2u_dx2</span> <span class="o">=</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span> <span class="mi">3</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> \
+      <span class="o">+</span> <span class="n">u</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># calculate second derivative of u wrt. y</span>
+    <span class="n">d2u_dy2</span> <span class="o">=</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span> <span class="p">]</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> \
+      <span class="o">+</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span> <span class="o">**</span> <span class="mi">2</span> <span class="p">)</span>
+
+    <span class="c1"># combine all derivatives as &quot;Predictor&quot; of time-derivative of u</span>
+    <span class="n">RHS_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">N</span><span class="p">,</span> <span class="n">N</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">RHS_x</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">du2_dx</span> <span class="o">-</span> <span class="n">duv_dy</span> \
+      <span class="o">+</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Re</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span> <span class="n">d2u_dx2</span> <span class="o">+</span> <span class="n">d2u_dy2</span> <span class="p">)</span>
+
+    <span class="c1"># calculate derivative of v**2 wrt. y</span>
+    <span class="n">vn2</span> <span class="o">=</span> <span class="p">(</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span> <span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">vs2</span> <span class="o">=</span> <span class="p">(</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">dv2_dy</span> <span class="o">=</span> <span class="p">(</span> <span class="n">vn2</span> <span class="o">-</span> <span class="n">vs2</span> <span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span>
+
+    <span class="c1"># calculate derivative of uv wrt. x</span>
+    <span class="n">ue</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">ve</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">uw</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">vw</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span> <span class="n">v</span><span class="p">[</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">duv_dx</span> <span class="o">=</span> <span class="p">(</span> <span class="n">ue</span> <span class="o">*</span> <span class="n">ve</span> <span class="o">-</span> <span class="n">uw</span> <span class="o">*</span> <span class="n">vw</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span>
+
+    <span class="c1"># calculate decond derivative of v wrt. x</span>
+    <span class="n">d2v_dx2</span> <span class="o">=</span> <span class="p">(</span> <span class="n">v</span><span class="p">[</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> \
+      <span class="o">+</span> <span class="n">v</span><span class="p">[</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span> <span class="o">**</span> <span class="mi">2</span> <span class="p">)</span>
+
+    <span class="c1"># calculate decond derivative of v wrt. y</span>
+    <span class="n">d2v_dy2</span> <span class="o">=</span> <span class="p">(</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span> <span class="p">]</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> \
+      <span class="o">+</span> <span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span> <span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span> <span class="o">**</span> <span class="mi">2</span> <span class="p">)</span>
+
+    <span class="n">RHS_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span> <span class="n">N</span><span class="p">,</span> <span class="n">N</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">RHS_y</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">dv2_dy</span> <span class="o">-</span> <span class="n">duv_dx</span> \
+      <span class="o">+</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Re</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span> <span class="n">d2v_dx2</span> <span class="o">+</span> <span class="n">d2v_dy2</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">RHS_x</span><span class="p">,</span> <span class="n">RHS_y</span></div>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+<div class="viewcode-block" id="Simulation.ADI"><a class="viewcode-back" href="../../source/liddrivpy.base.html#liddrivpy.base.Simulation.ADI">[docs]</a>  <span class="k">def</span> <span class="nf">ADI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">,</span>
+    <span class="n">S</span> <span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Solver for alternating dimension implicit (ADI) method, used to solve</span>
+<span class="sd">    equations Sylvester-type equations with form :math:`A X - X B = S`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of nondimensionalized pressure of discretized cavity.</span>
+<span class="sd">    S : numpy.ndarray [unitless]</span>
+<span class="sd">      2D array of solution to Sylvester equation above.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    p : numpy.ndarray [unitless]</span>
+<span class="sd">      Updated value of `p` that is an improvement over the previous value.</span>
+<span class="sd">    res : float</span>
+<span class="sd">      Residual error between RHS and LHS of Sylvester equation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span>
+
+    <span class="n">RHS_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="n">N</span> <span class="p">)</span>
+    <span class="n">RHS_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="n">N</span> <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+
+      <span class="n">RHS_j</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">,</span> <span class="n">j</span> <span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="p">]</span> \
+      <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_n</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> \
+      <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_s</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="o">+</span> <span class="n">S</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span> <span class="p">]</span> <span class="p">)</span>
+
+      <span class="n">p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="p">]</span> <span class="o">=</span> <span class="n">thomas</span><span class="p">(</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_w</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="p">],</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="p">],</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_e</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="p">],</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">RHS_j</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+
+      <span class="n">RHS_i</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_p</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> \
+      <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_e</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> \
+      <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_w</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span> <span class="o">+</span> <span class="n">S</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span>
+
+      <span class="n">p</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="n">thomas</span><span class="p">(</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_s</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">],</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_p</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">],</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omega</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_n</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">],</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">RHS_i</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span>
+
+    <span class="n">dif</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> \
+      <span class="o">-</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_p</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> \
+      <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_n</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span><span class="p">]</span> \
+      <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> \
+      <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_e</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> \
+      <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_w</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="p">(</span> <span class="n">dif</span> <span class="o">**</span> <span class="mi">2</span> <span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="n">N</span> <span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+
+    <span class="k">return</span> <span class="n">p</span><span class="p">,</span> <span class="n">res</span></div>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+<div class="viewcode-block" id="Simulation.execute"><a class="viewcode-back" href="../../source/liddrivpy.base.html#liddrivpy.base.Simulation.execute">[docs]</a>  <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span> <span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Execute lid-driven cavity simulation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    output_dir : str</span>
+<span class="sd">      Directory to save class instance and results of simulation to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># create output directory if it doesn&#39;t already exist</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span> <span class="o">=</span> <span class="kc">True</span> <span class="p">)</span>
+
+    <span class="c1"># save pickled (serialized) instance of class, which contains all parameters</span>
+    <span class="c1"># and initialized values.</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;simulation.pkl&#39;</span> <span class="p">),</span> <span class="s1">&#39;wb&#39;</span> <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+      <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">f</span> <span class="p">)</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span>
+
+    <span class="c1"># create and open log file for writing diagnostic data to</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;residual.log&#39;</span> <span class="p">),</span> <span class="s1">&#39;w&#39;</span> <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+      <span class="k">for</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="p">)</span> <span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_boundary_conditions</span><span class="p">(</span>
+          <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">,</span>
+          <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="p">)</span>
+
+        <span class="c1"># 1. Prediction step</span>
+        <span class="c1">#.....................................................................#</span>
+
+        <span class="n">R_x</span><span class="p">,</span> <span class="n">R_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicted_time_derivatives</span><span class="p">(</span>
+          <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">,</span>
+          <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="p">)</span>
+
+        <span class="c1"># if it&#39;s the first time-step initialize with Forward Euler</span>
+        <span class="k">if</span> <span class="n">t_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+          <span class="bp">self</span><span class="o">.</span><span class="n">_u_p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> \
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">*</span> <span class="n">R_x</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">_v_p</span><span class="p">[</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">[</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> \
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">*</span> <span class="n">R_y</span><span class="p">[</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+
+        <span class="c1"># otherwise use Adams Bashforth</span>
+        <span class="k">else</span><span class="p">:</span>
+
+          <span class="n">R_x_prev</span><span class="p">,</span> <span class="n">R_y_prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicted_time_derivatives</span><span class="p">(</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">,</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="p">)</span>
+
+          <span class="bp">self</span><span class="o">.</span><span class="n">_u_p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> \
+            <span class="o">*</span> <span class="p">(</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">R_x</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">-</span> <span class="n">R_x_prev</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">_u_p</span><span class="p">[</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">[</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> \
+            <span class="o">*</span> <span class="p">(</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">R_y</span><span class="p">[</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">-</span> <span class="n">R_y_prev</span><span class="p">[</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># 2. Correction step</span>
+        <span class="c1">#.....................................................................#</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+          <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_S</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">*</span> <span class="p">(</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_u_p</span><span class="p">[</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="p">]</span> \
+              <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_u_p</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span> <span class="o">+</span>  <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_p</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">]</span> \
+              <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_p</span><span class="p">[</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span> <span class="p">)</span>
+
+        <span class="c1"># initialize residual to be greater than `tol`</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span>
+
+        <span class="c1"># initialize counter for iterations of pressure solver</span>
+        <span class="n">i_p</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="p">(</span> <span class="n">res</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span> <span class="p">):</span>
+
+          <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ADI</span><span class="p">(</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_S</span> <span class="p">)</span>
+
+          <span class="c1"># increment counter</span>
+          <span class="n">i_p</span> <span class="o">+=</span> <span class="mi">1</span>
+
+          <span class="c1"># record value of residual at given outer and inner (pressure) step</span>
+          <span class="n">output_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;outer_iteration=</span><span class="si">{t_idx:06d}</span><span class="s1">    &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;pressure_iteration=</span><span class="si">{i_p:06d}</span><span class="s1">    &#39;</span>\
+            <span class="sa">f</span><span class="s1">&#39;residual=</span><span class="si">{res:.4e}</span><span class="s1">&#39;</span>
+          <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="n">output_str</span> <span class="p">)</span>
+
+          <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="p">)</span> <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;solution to corrector step diverged&#39;</span><span class="p">)</span>
+
+          <span class="k">elif</span> <span class="n">i_p</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p_max</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="sa">f</span><span class="s1">&#39;solution to corrector step has not converged&#39;</span> \
+              <span class="s1">&#39;after </span><span class="si">{self._p_max}</span><span class="s1"> iterations: has residual </span><span class="si">{res}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># 3. Apply correction</span>
+        <span class="c1">#.....................................................................#</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_u_p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dx</span> \
+          <span class="o">*</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dy</span> \
+          <span class="o">*</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># normalize pressure (only pressure differences matter, adding a constant</span>
+        <span class="c1"># offset to all pressure values has no effect on the system&#39;s evolution.)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="p">)</span>
+
+        <span class="c1"># copy current primitive variables for use as `previous` values in next</span>
+        <span class="c1"># iteration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_p_prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_u_prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span> <span class="p">)</span>
+
+    <span class="c1"># save final converged arrays of primitive variables.</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;u&#39;</span> <span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span> <span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span> <span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="p">)</span></div></div>
+
+  <span class="c1">#---------------------------------------------------------------------------#</span>
+
+<span class="c1">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Nanohmics, Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

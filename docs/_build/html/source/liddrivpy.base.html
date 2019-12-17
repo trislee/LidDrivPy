@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>liddrivpy.base module &mdash; PyCUP 1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="liddrivpy.utils module" href="liddrivpy.utils.html" />
+    <link rel="prev" title="liddrivpy package" href="liddrivpy.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyCUP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="liddrivpy.html">liddrivpy package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="liddrivpy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">liddrivpy.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="liddrivpy.utils.html">liddrivpy.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyCUP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="liddrivpy.html">liddrivpy package</a> &raquo;</li>
+        
+      <li>liddrivpy.base module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/liddrivpy.base.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-liddrivpy.base">
+<span id="liddrivpy-base-module"></span><h1>liddrivpy.base module<a class="headerlink" href="#module-liddrivpy.base" title="Permalink to this headline">¶</a></h1>
+<p>Base class for finite-volume Cartesian staggered grid solver</p>
+<dl class="class">
+<dt id="liddrivpy.base.System">
+<em class="property">class </em><code class="sig-prename descclassname">liddrivpy.base.</code><code class="sig-name descname">System</code><span class="sig-paren">(</span><em class="sig-param">N_cells</em>, <em class="sig-param">Re</em>, <em class="sig-param">U_lid</em>, <em class="sig-param">L_lid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/liddrivpy/base.html#System"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liddrivpy.base.System" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for physical parameters of lid-driven cavity system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N_cells</strong> (<em>int [unitless]</em>) – Number of cells in each dimension.</p></li>
+<li><p><strong>Re</strong> (<em>float [unitless]</em>) – Reynolds number of system (ratio of inertial to viscous forces).</p></li>
+<li><p><strong>U_lid</strong> (<em>float [m/s]</em>) – Velocity of cavity lid.</p></li>
+<li><p><strong>L_lid</strong> (<em>float [m]</em>) – Size of lid along each dimension.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="liddrivpy.base.Solver">
+<em class="property">class </em><code class="sig-prename descclassname">liddrivpy.base.</code><code class="sig-name descname">Solver</code><span class="sig-paren">(</span><em class="sig-param">dt</em>, <em class="sig-param">omega</em>, <em class="sig-param">max_t</em>, <em class="sig-param">p_max</em>, <em class="sig-param">tol</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/liddrivpy/base.html#Solver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liddrivpy.base.Solver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for nonphysical (purely computational) parameters for
+lid-driven cavity solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dt</strong> (<em>float [seconds]</em>) – Time-step for each iteration of the solver.</p></li>
+<li><p><strong>omega</strong> (<em>float [unitless]</em>) – Relaxation factor for alternating direction implicit method.</p></li>
+<li><p><strong>max_t</strong> (<em>float [seconds]</em>) – Maximum allowed simulation time.</p></li>
+<li><p><strong>p_max</strong> (<em>int [unitless]</em>) – Maximum allowed iterations of pressure solver</p></li>
+<li><p><strong>tol</strong> (<em>float [unitless]</em>) – Tolerance (largest allowed error) for ADI method.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="liddrivpy.base.Simulation">
+<em class="property">class </em><code class="sig-prename descclassname">liddrivpy.base.</code><code class="sig-name descname">Simulation</code><span class="sig-paren">(</span><em class="sig-param">system</em>, <em class="sig-param">solver</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/liddrivpy/base.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liddrivpy.base.Simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for lid-driven cavity complete simulation.</p>
+<dl class="method">
+<dt id="liddrivpy.base.Simulation.set_boundary_conditions">
+<code class="sig-name descname">set_boundary_conditions</code><span class="sig-paren">(</span><em class="sig-param">u</em>, <em class="sig-param">v</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/liddrivpy/base.html#Simulation.set_boundary_conditions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liddrivpy.base.Simulation.set_boundary_conditions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set boundary conditions for the solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of nondimensionalized x-velocities of discretized cavity, before
+boundary conditions have been applied.</p></li>
+<li><p><strong>v</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of nondimensionalized y-velocities of discretized cavity, before
+boundary conditions have been applied.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>u</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of nondimensionalized x-velocities of discretized cavity, after
+boundary conditions have been applied.</p></li>
+<li><p><strong>v</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of nondimensionalized y-velocities of discretized cavity, after
+boundary conditions have been applied.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="liddrivpy.base.Simulation.predicted_time_derivatives">
+<code class="sig-name descname">predicted_time_derivatives</code><span class="sig-paren">(</span><em class="sig-param">u</em>, <em class="sig-param">v</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/liddrivpy/base.html#Simulation.predicted_time_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liddrivpy.base.Simulation.predicted_time_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate time-derivatives of velocity for use in Prediction step,
+ignoring contribution from pressure gradient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of nondimensionalized x-velocities of discretized cavity.</p></li>
+<li><p><strong>v</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of nondimensionalized y-velocities of discretized cavity.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>RHS_x</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of nondimensionalzied velocity time derivative along x dimension.</p></li>
+<li><p><strong>RHS_y</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of nondimensionalzied velocity time derivative along y dimension.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="liddrivpy.base.Simulation.ADI">
+<code class="sig-name descname">ADI</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">S</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/liddrivpy/base.html#Simulation.ADI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liddrivpy.base.Simulation.ADI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solver for alternating dimension implicit (ADI) method, used to solve
+equations Sylvester-type equations with form <span class="math notranslate nohighlight">\(A X - X B = S\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of nondimensionalized pressure of discretized cavity.</p></li>
+<li><p><strong>S</strong> (<em>numpy.ndarray [unitless]</em>) – 2D array of solution to Sylvester equation above.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>p</strong> (<em>numpy.ndarray [unitless]</em>) – Updated value of <cite>p</cite> that is an improvement over the previous value.</p></li>
+<li><p><strong>res</strong> (<em>float</em>) – Residual error between RHS and LHS of Sylvester equation.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="liddrivpy.base.Simulation.execute">
+<code class="sig-name descname">execute</code><span class="sig-paren">(</span><em class="sig-param">output_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/liddrivpy/base.html#Simulation.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liddrivpy.base.Simulation.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute lid-driven cavity simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>output_dir</strong> (<em>str</em>) – Directory to save class instance and results of simulation to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="liddrivpy.utils.html" class="btn btn-neutral float-right" title="liddrivpy.utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="liddrivpy.html" class="btn btn-neutral float-left" title="liddrivpy package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Nanohmics, Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
