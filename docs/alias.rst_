@@ -1,0 +1,11 @@
+
+.. List of common strings used in the documentation
+
+.. Package Information
+
+.. |PkgName| replace:: PyCUP
+.. |PkgFullName| replace:: Python CUDA Primitives
+.. |PkgPyName| replace:: pycup
+.. |PkgVersion| replace:: 0.1
+.. |PkgReleaseDate| replace:: April 4, 2019
+.. |PkgTarBall| replace:: pycup-|PkgVersion|.tar.gz
