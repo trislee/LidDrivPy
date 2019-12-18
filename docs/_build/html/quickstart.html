@@ -91,7 +91,6 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#running-built-in-tests">Running built-in tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-the-documentation">Building the documentation</a></li>
 </ul>
 </li>
@@ -165,41 +164,24 @@
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>PyCUP closely adheres to the <a class="reference external" href="https://www.python.org/">Python</a> installation and distribution practices discussed in the <a class="reference external" href="https://packaging.python.org">Python Packaging User Guide</a>.
-The PyCUP Python package, as well as any of its Python package dependencies, can be installed by running the following command in a terminal from the PyCUP package root directory</p>
+<p>LidDrivPy closely adheres to the <a class="reference external" href="https://www.python.org/">Python</a> installation and distribution practices discussed in the <a class="reference external" href="https://packaging.python.org">Python Packaging User Guide</a>.
+The LidDrivPy Python package, as well as any of its Python package dependencies, can be installed by running the following command in a terminal from the LidDrivPy package root directory</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install .
-</pre></div>
-</div>
-</div>
-<div class="section" id="running-built-in-tests">
-<span id="sec-quick-tests"></span><h2>Running built-in tests<a class="headerlink" href="#running-built-in-tests" title="Permalink to this headline">¶</a></h2>
-<p>PyCUP is instrumented with suites of unit tests that aid in verifying the correctness of the source code.
-These unit tests are implemented using Python’s <a class="reference external" href="https://docs.python.org/2/library/unittest.html">unittest</a> framework and can be executed using:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># run unit tests</span>
-python setup.py <span class="nb">test</span>
-</pre></div>
-</div>
-<p>The source code used to implement the unit tests is located under the <code class="docutils literal notranslate"><span class="pre">pycup/tests</span></code> directory.
-By convention, sub-directories inside <code class="docutils literal notranslate"><span class="pre">tests</span></code> reflect the directory (sub-package) structure of <code class="docutils literal notranslate"><span class="pre">pycup</span></code>.</p>
-<p>As an alternative to running the entire test suite (which covers all PyCUP operations), the test suite for a single operation (for example the <code class="xref py py-mod docutils literal notranslate"><span class="pre">pycup.elemental.derived.axpb</span></code> subpackage) can be executed by running:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># run unit tests for elemental.derived.axpb subpackage</span>
-python -m unittest -v -f tests.elemental.derived.axpb.test_suite
 </pre></div>
 </div>
 </div>
 <div class="section" id="building-the-documentation">
 <span id="sec-quick-docs"></span><h2>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Permalink to this headline">¶</a></h2>
-<p>The documentation for PyCUP is generated using <a class="reference external" href="http://www.sphinx-doc.org">Sphinx</a> tool.
+<p>The documentation for LidDrivPy is generated using <a class="reference external" href="http://www.sphinx-doc.org">Sphinx</a> tool.
 <a class="reference external" href="http://www.sphinx-doc.org">Sphinx</a> converts plain-text, human-readable <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> (<code class="docutils literal notranslate"><span class="pre">*.rst</span></code>) files into HTML websites and other formats such as PDF and EPubs.
 Additionally, <a class="reference external" href="http://www.sphinx-doc.org">Sphinx</a> utilizes Python’s native documentation facilities to auto-generate visually pleasing and easy to navigate source code documentation.
 The vast majority of widely-used Python packages, including <a class="reference external" href="http://www.numpy.org/">NumPy</a>, <a class="reference external" href="https://www.scipy.org/">SciPy</a>, and <a class="reference external" href="https://matplotlib.org/">matplotlib</a>, are documented using <a class="reference external" href="http://www.sphinx-doc.org">Sphinx</a>.</p>
-<p>The PyCUP distribution package <code class="docutils literal notranslate"><span class="pre">pycup-X.Y.tar.gz</span></code> is typically distributed with a companion package <code class="docutils literal notranslate"><span class="pre">pycup-X.Y-docs.tar.gz</span></code> that includes the documentation for PyCUP vX.Y in HTML and PDF format.
-Users that modify the source code or contribute to PyCUP’s raw documentation files (located under the <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory) can generate an up-to-date HTML website by executing the commands:</p>
+<p>Users that modify the source code or contribute to LidDrivPy’s raw documentation files (located under the <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory) can generate an up-to-date HTML website by executing the commands:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># change current directory to be the project directory</span>
 <span class="c1"># cd &lt;path to project directory&gt;</span>
 <span class="c1"># the output of the ls command should be similar to:</span>
 <span class="c1">#   MANIFEST.in  PKG-INFO  README.rst  docs</span>
-<span class="c1">#   examples  pycup  pycup.egg-info  setup.cfg  setup.py</span>
+<span class="c1">#   examples  liddrivpy  liddrivpy.egg-info  setup.cfg  setup.py</span>
 
 <span class="c1"># install/update (if necessary) sphinx and related utilities</span>
 <span class="c1"># required to build the documentation</span>
@@ -218,7 +200,7 @@ make html
 make latexpdf
 </pre></div>
 </div>
-<p>The final PDF file (<cite>PyCUP.pdf</cite>) and the intermediate <a class="reference external" href="https://www.latex-project.org/">LaTeX</a> files are located under the <code class="docutils literal notranslate"><span class="pre">_build/latex</span></code> directory.
+<p>The final PDF file (<cite>LidDrivPy.pdf</cite>) and the intermediate <a class="reference external" href="https://www.latex-project.org/">LaTeX</a> files are located under the <code class="docutils literal notranslate"><span class="pre">_build/latex</span></code> directory.
 Information on generating documentation files in other formats (EPubs, XML, man pages, etc.) can be found on the <a class="reference external" href="http://www.sphinx-doc.org">Sphinx</a> website.</p>
 <p>Although the <a class="reference external" href="http://www.sphinx-doc.org">Sphinx</a> build system is able to automatically detect and update the documentation to reflect changes to content of existing files, it is unable to automatically take into account newly created, deleted, or renamed files and directories.
 Comprehensive instructions for adding or removing files from the documentation are provided in the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/quickstart.html#defining-document-structure">Defining document structure</a> section of the <a class="reference external" href="http://www.sphinx-doc.org">Sphinx</a> website.</p>

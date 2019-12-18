@@ -5,49 +5,24 @@ Quickstart
 Installation
 ------------
 
-PyCUP closely adheres to the Python_ installation and distribution practices discussed in the `Python Packaging User Guide`_.
-The PyCUP Python package, as well as any of its Python package dependencies, can be installed by running the following command in a terminal from the PyCUP package root directory
+LidDrivPy closely adheres to the Python_ installation and distribution practices discussed in the `Python Packaging User Guide`_.
+The LidDrivPy Python package, as well as any of its Python package dependencies, can be installed by running the following command in a terminal from the LidDrivPy package root directory
 
 .. code-block:: bash
 
   pip install .
-
-.. _sec-quick-tests:
-
-Running built-in tests
-----------------------
-
-PyCUP is instrumented with suites of unit tests that aid in verifying the correctness of the source code.
-These unit tests are implemented using Python's unittest_ framework and can be executed using:
-
-.. code-block:: bash
-
-  # run unit tests
-  python setup.py test
-
-The source code used to implement the unit tests is located under the ``pycup/tests`` directory.
-By convention, sub-directories inside ``tests`` reflect the directory (sub-package) structure of ``pycup``.
-
-As an alternative to running the entire test suite (which covers all PyCUP operations), the test suite for a single operation (for example the :py:mod:`pycup.elemental.derived.axpb` subpackage) can be executed by running:
-
-.. code-block:: bash
-
-  # run unit tests for elemental.derived.axpb subpackage
-  python -m unittest -v -f tests.elemental.derived.axpb.test_suite
-
 
 .. _sec-quick-docs:
 
 Building the documentation
 --------------------------
 
-The documentation for PyCUP is generated using Sphinx_ tool.
+The documentation for LidDrivPy is generated using Sphinx_ tool.
 Sphinx_ converts plain-text, human-readable reStructuredText_ (``*.rst``) files into HTML websites and other formats such as PDF and EPubs.
 Additionally, Sphinx_ utilizes Python's native documentation facilities to auto-generate visually pleasing and easy to navigate source code documentation.
 The vast majority of widely-used Python packages, including NumPy_, SciPy_, and matplotlib_, are documented using Sphinx_.
 
-The PyCUP distribution package ``pycup-X.Y.tar.gz`` is typically distributed with a companion package ``pycup-X.Y-docs.tar.gz`` that includes the documentation for PyCUP vX.Y in HTML and PDF format.
-Users that modify the source code or contribute to PyCUP's raw documentation files (located under the ``docs`` directory) can generate an up-to-date HTML website by executing the commands:
+Users that modify the source code or contribute to LidDrivPy's raw documentation files (located under the ``docs`` directory) can generate an up-to-date HTML website by executing the commands:
 
 .. code-block:: bash
 
@@ -55,7 +30,7 @@ Users that modify the source code or contribute to PyCUP's raw documentation fil
   # cd <path to project directory>
   # the output of the ls command should be similar to:
   #   MANIFEST.in  PKG-INFO  README.rst  docs
-  #   examples  pycup  pycup.egg-info  setup.cfg  setup.py
+  #   examples  liddrivpy  liddrivpy.egg-info  setup.cfg  setup.py
 
   # install/update (if necessary) sphinx and related utilities
   # required to build the documentation
@@ -76,7 +51,7 @@ Provided that the computing environment is instrumented with a LaTeX compiler an
   # build PDF documentation
   make latexpdf
 
-The final PDF file (`PyCUP.pdf`) and the intermediate LaTeX_ files are located under the ``_build/latex`` directory.
+The final PDF file (`LidDrivPy.pdf`) and the intermediate LaTeX_ files are located under the ``_build/latex`` directory.
 Information on generating documentation files in other formats (EPubs, XML, man pages, etc.) can be found on the Sphinx_ website.
 
 Although the Sphinx_ build system is able to automatically detect and update the documentation to reflect changes to content of existing files, it is unable to automatically take into account newly created, deleted, or renamed files and directories.

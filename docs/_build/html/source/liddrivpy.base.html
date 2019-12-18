@@ -187,7 +187,7 @@
 
 <dl class="class">
 <dt id="liddrivpy.base.Solver">
-<em class="property">class </em><code class="sig-prename descclassname">liddrivpy.base.</code><code class="sig-name descname">Solver</code><span class="sig-paren">(</span><em class="sig-param">dt</em>, <em class="sig-param">omega</em>, <em class="sig-param">max_t</em>, <em class="sig-param">p_max</em>, <em class="sig-param">tol</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/liddrivpy/base.html#Solver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liddrivpy.base.Solver" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">liddrivpy.base.</code><code class="sig-name descname">Solver</code><span class="sig-paren">(</span><em class="sig-param">dt</em>, <em class="sig-param">omega</em>, <em class="sig-param">t_itrmax</em>, <em class="sig-param">t_tol</em>, <em class="sig-param">p_itrmax</em>, <em class="sig-param">p_tol</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/liddrivpy/base.html#Solver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liddrivpy.base.Solver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for nonphysical (purely computational) parameters for
 lid-driven cavity solver.</p>
@@ -196,9 +196,10 @@ lid-driven cavity solver.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dt</strong> (<em>float [seconds]</em>) – Time-step for each iteration of the solver.</p></li>
 <li><p><strong>omega</strong> (<em>float [unitless]</em>) – Relaxation factor for alternating direction implicit method.</p></li>
-<li><p><strong>max_t</strong> (<em>float [seconds]</em>) – Maximum allowed simulation time.</p></li>
-<li><p><strong>p_max</strong> (<em>int [unitless]</em>) – Maximum allowed iterations of pressure solver</p></li>
-<li><p><strong>tol</strong> (<em>float [unitless]</em>) – Tolerance (largest allowed error) for ADI method.</p></li>
+<li><p><strong>t_itrmax</strong> (<em>float [seconds]</em>) – Maximum allowed simulation time.</p></li>
+<li><p><strong>t_tol</strong> (<em>tol [unitless]</em>) – Tolerance (largest allowed error) to terminate solver</p></li>
+<li><p><strong>p_itrmax</strong> (<em>int [unitless]</em>) – Maximum allowed iterations of pressure solver</p></li>
+<li><p><strong>p_tol</strong> (<em>float [unitless]</em>) – Tolerance (largest allowed error) for ADI method.</p></li>
 </ul>
 </dd>
 </dl>
