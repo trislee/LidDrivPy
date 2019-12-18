@@ -63,7 +63,7 @@ class System:
     if L_lid <= 0:
       msg = f'Lid size `L_lid` must be non-negative, not {L_lid}'
       raise ValueError( msg )
-    self.L_lid = L_lid
+    self._L_lid = L_lid
 
     #.........................................................................#
 
@@ -82,11 +82,13 @@ class Solver:
     Time-step for each iteration of the solver.
   omega : float [unitless]
     Relaxation factor for alternating direction implicit method.
-  max_t : float [seconds]
+  t_itrmax : float [seconds]
     Maximum allowed simulation time.
-  p_max : int [unitless]
+  t_tol : tol [unitless]
+    Tolerance (largest allowed error) to terminate solver
+  p_itrmax : int [unitless]
     Maximum allowed iterations of pressure solver
-  tol : float [unitless]
+  p_tol : float [unitless]
     Tolerance (largest allowed error) for ADI method.
   """
 
@@ -95,9 +97,10 @@ class Solver:
   def __init__(self,
     dt,
     omega,
-    max_t,
-    p_max,
-    tol ):
+    t_itrmax,
+    t_tol,
+    p_itrmax,
+    p_tol ):
 
     # convert input parameters to standard form
     #.........................................................................#
@@ -114,24 +117,30 @@ class Solver:
       raise ValueError( msg )
     self._omega = omega
 
-    max_t = float( max_t )
-    if max_t <= 0:
-      msg = f'Maximum time `max_t` must be non-negative, not {max_t}'
+    t_itrmax = int( t_itrmax )
+    if t_itrmax <= 0:
+      msg = f'Maximum time `t_itrmax` must be non-negative, not {t_itrmax}'
       raise ValueError( msg )
-    self._max_t = max_t
+    self._t_itrmax = t_itrmax
 
-    p_max = float( p_max )
-    if p_max <= 0:
-      msg = f'Maximum number of pressure solver iterations `p_max` must be' \
-        'non-negative, not {p_max}'
+    t_tol = float( t_tol )
+    if t_tol <= 0:
+      msg = f'Outer (time-step) Tolerance `t_tol` must be non-negative, not {t_tol}'
       raise ValueError( msg )
-    self._p_max = p_max
+    self._t_tol = t_tol
 
-    tol = float( tol )
-    if tol <= 0:
-      msg = f'Tolerance `tol` must be non-negative, not {tol}'
+    p_itrmax = float( p_itrmax )
+    if p_itrmax <= 0:
+      msg = f'Maximum number of pressure solver iterations `p_itrmax` must be' \
+        'non-negative, not {p_itrmax}'
       raise ValueError( msg )
-    self._tol = tol
+    self._p_itrmax = p_itrmax
+
+    p_tol = float( p_tol )
+    if p_tol <= 0:
+      msg = f'Inner (pressure solver) tolerance `p_tol` must be non-negative, not {p_tol}'
+      raise ValueError( msg )
+    self._p_tol = p_tol
 
     #.........................................................................#
 
@@ -160,20 +169,21 @@ class Simulation:
     self._system = system
 
     self._N_cells = self._system._N_cells
-    self._Re = self._system.Re
-    self._U_lid = self._system.U_lid
-    self._L_lid = self._system.L_lid
+    self._Re = self._system._Re
+    self._U_lid = self._system._U_lid
+    self._L_lid = self._system._L_lid
 
     if not isinstance( solver, Solver ):
       msg = f'`solver` must be instance of Solver, not {type(solver)}.'
       raise TypeError( msg )
     self._solver = solver
 
-    self._dt = self._solver.dt
-    self._omega = self._solver.omega
-    self._max_t = self._solver.max_t
-    self._p_max = self._solver.p_max
-    self._tol = self._solver.tol
+    self._dt = self._solver._dt
+    self._omega = self._solver._omega
+    self._t_itrmax = self._solver._t_itrmax
+    self._t_tol = self._solver._t_tol
+    self._p_itrmax = self._solver._p_itrmax
+    self._p_tol = self._solver._p_tol
 
     # define derived variables
     #.........................................................................#
@@ -185,17 +195,17 @@ class Simulation:
     self._dx = self._dy = self._L_lid / self._N_cells
 
     # primitive variable arrays
-    self.u, self.v, self.p = np.zeros( ( self._N, self._N ) )
+    self.u, self.v, self.p = ( np.zeros( ( self._N, self._N ) ), ) * 3
 
     # predictor variable arrays
-    self._u_p, self._v_p, self._p_p = np.zeros( ( self._N, self._N ) )
+    self._u_p, self._v_p, self._p_p = ( np.zeros( ( self._N, self._N ) ), ) * 3
 
     # previous-step variable arrays (used for computing predictor step)
-    self._u_prev, self._v_prev, self._p_prev = np.zeros( ( self._N, self._N ) )
+    self._u_prev, self._v_prev, self._p_prev = ( np.zeros( ( self._N, self._N ) ), ) * 3
 
     # weight arrays and solution array for pressure solver
     self._A_n, self._A_s, self._A_e, self._A_w, self._A_p, self._S = \
-      np.zeros( ( self._N, self._N ) )
+      ( np.zeros( ( self._N, self._N ) ), ) * 6
 
     self._A_n[ :, 1:self._N-2 ] = self._dx / self._dy
     self._A_s[ :, 2:self._N-1 ] = self._dx / self._dy
@@ -417,7 +427,7 @@ class Simulation:
     # create and open log file for writing diagnostic data to
     with open( os.path.join( output_dir, 'residual.log' ), 'w' ) as f:
 
-      for t_idx, _ in enumerate( np.arange( 0, self._max_t, self._dt ) ):
+      for t_idx in range( self._t_itrmax ):
 
         self.u, self.v = self.set_boundary_conditions(
           u = self.u,
@@ -460,13 +470,13 @@ class Simulation:
               - self._u_p[ i,j ] ) * self._dy +  ( self._v_p[ i, j + 1 ] \
               - self._v_p[ i,j ] ) * self._dx )
 
-        # initialize residual to be greater than `tol`
-        res = 2 * self._tol
+        # initialize residual to be greater than `p_tol`
+        res = 2 * self._p_tol
 
         # initialize counter for iterations of pressure solver
         i_p = 0
 
-        while ( res > self._tol ):
+        while ( res > self._p_tol ):
 
           self.p, res = self.ADI(
             p = self.p,
@@ -478,15 +488,15 @@ class Simulation:
           # record value of residual at given outer and inner (pressure) step
           output_str = f'outer_iteration={t_idx:06d}    '\
             f'pressure_iteration={i_p:06d}    '\
-            f'residual={res:.4e}'
+            f'residual={res:.4e}\n'
           f.write( output_str )
 
           if np.any( np.isnan( self.p ) ):
             raise ValueError('solution to corrector step diverged')
 
-          elif i_p == self._p_max:
+          elif i_p == self._p_itrmax:
             raise ValueError( f'solution to corrector step has not converged' \
-              'after {self._p_max} iterations: has residual {res}')
+              'after {self._p_itrmax} iterations: has residual {res}')
 
         # 3. Apply correction
         #.....................................................................#
@@ -499,6 +509,15 @@ class Simulation:
         # normalize pressure (only pressure differences matter, adding a constant
         # offset to all pressure values has no effect on the system's evolution.)
         self.p -= np.mean( self.p )
+
+        error_u = np.linalg.norm( self.u - self._u_prev )
+        error_v = np.linalg.norm( self.v - self._v_prev )
+
+        print( t_idx, error_u, error_v )
+
+        # check if simulation has converged
+        if ( ( error_u < self._t_tol ) & ( error_v < self._t_tol ) & ( t_idx > 1 ) ):
+          break
 
         # copy current primitive variables for use as `previous` values in next
         # iteration

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# PyCUP documentation build configuration file.
+# LidDrivPy documentation build configuration file.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -45,7 +45,7 @@ source_suffix = [ '.rst', ]
 master_doc = 'index'
 
 # General information about the project.
-project = u'PyCUP'
+project = u'LidDrivPy'
 copyright = u'2019, Nanohmics, Inc.'
 author = u'Nanohmics, Inc.'
 
@@ -138,7 +138,7 @@ html_static_path = [  ]
 # -- Options for HTMLHelp output -----------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PyCUPdoc'
+htmlhelp_basename = 'LidDrivPydoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -173,8 +173,8 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ( master_doc,
-    u'PyCUP.tex',
-    u'PyCUP Documentation',
+    u'LidDrivPy.tex',
+    u'LidDrivPy Documentation',
     u'Nanohmics, Inc.',
     u'manual',
     True ), ]
@@ -185,8 +185,8 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
   ( master_doc,
-    u'PyCUP',
-    u'PyCUP Documentation',
+    u'LidDrivPy',
+    u'LidDrivPy Documentation',
     [ u'Nanohmics, Inc.' ],
     1 ) ]
 
@@ -198,10 +198,10 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ( master_doc,
-    u'PyCUP',
-    u'PyCUP Documentation',
+    u'LidDrivPy',
+    u'LidDrivPy Documentation',
     u'Nanohmics, Inc.',
-    u'PyCUP',
+    u'LidDrivPy',
     u'Collection of routines for performing mathematical operations '
       + u'on arrays and stacks of arrays using CUDA.'
     u'Main'), ]
